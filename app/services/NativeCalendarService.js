@@ -7,12 +7,12 @@ const POC = 'POC';
 
 class ReminderService {
   constructor() {
-    this.hasAccess = false;
-    this.calendarId = null;
+    this.deviceHasAccess = false;
+    this.deviceCalendarId = null;
     RNCalendarEvents.requestPermissions(false)
-      .then(fulfiled => {
-        if (fulfiled == 'authorized' || fulfiled == 'undetermined') {
-          this.hasAccess = true;
+      .then(permission => {
+        if (permission == 'authorized' || permission == 'undetermined') {
+          this.deviceHasAccess = true;
           // check if device has custom calendar
           this.getCalendar(POC)
             .then(async ({calendar, googleCal}) => {
@@ -37,14 +37,14 @@ class ReminderService {
                 }
                 RNCalendarEvents.saveCalendar(calendar)
                   .then(calendar => {
-                    this.calendarId = calendar;
+                    this.deviceCalendarId = calendar;
                     console.log('Calendar created', calendar);
                   })
                   .catch(error => {
                     console.error(error);
                   });
               } else {
-                this.calendarId = calendar.id;
+                this.deviceCalendarId = calendar.id;
               }
             })
             .catch(error => {
@@ -104,7 +104,7 @@ class ReminderService {
               description: note,
               startDate: startDate,
               endDate: endDate,
-              calendarId: calendar.id,
+              deviceCalendarId: calendar.id,
               event: true,
               alarms: [{date: startDate}, {date: endDate}],
             })

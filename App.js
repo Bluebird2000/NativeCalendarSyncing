@@ -1,46 +1,44 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
- import moment from 'moment';
-import React from 'react';
+import moment from 'moment';
+import React, {useState} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
+  Alert,
   StyleSheet,
   Text,
   TouchableOpacity,
-  useColorScheme,
   View,
+  TextInput,
 } from 'react-native';
 
-import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
-
-import ReminderService from './app/services/ReminderService';
+import ReminderService from './app/services/NativeCalendarService';
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
   const Reminder = new ReminderService();
 
   const addEventToCalendar = () => {
     Reminder.addEvent({
-      title: 'Event subject',
-      note: 'some details about the event here',
+      title: title ? title : 'Native Syncing Feasibility',
+      note: note
+        ? note
+        : 'As a customer, I want to sync my Wellthy experience with my other apps so that my mobile experience is intuitive and connected.',
       startDate: moment().toISOString(),
       endDate: moment().toISOString(),
     })
-      .then(reminder => {
-        console.log('.....reminder', reminder);
-        // do something here
+      .then(result => {
+        Alert.alert(
+          'Event Created',
+          'New Event has been successfully added to your device calendar',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ],
+        );
+        console.log('.....result', result);
       })
       .catch(error => {
         console.log('.....reminder error', error);
@@ -49,41 +47,51 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <TouchableOpacity onPress={() => addEventToCalendar()}>
-            <Text>Add Event to calendar</Text>
-          </TouchableOpacity>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>Natiive App Syncing Feasibility</Text>
+      <View>
+        <View>
+          <TextInput
+            style={styles.input}
+            onChangeText={title => setTitle(title)}
+            placeholder="Title"
+            value={title}
+          />
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        <View>
+          <TextInput
+            style={styles.input}
+            onChangeText={note => setNote(note)}
+            placeholder="Note"
+            value={note}
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={() => addEventToCalendar()}
+          style={{
+            backgroundColor: '#1436A4',
+            padding: 14,
+            borderRadius: 8,
+            alignItems: 'center',
+          }}>
+          <Text style={{color: '#ffffff'}}>Add Task to calendar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    width: 320,
+    padding: 10,
+    borderColor: '#777777',
+    borderRadius: 6,
   },
 });
 
