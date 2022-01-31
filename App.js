@@ -5,58 +5,47 @@
  * @format
  * @flow strict-local
  */
-
+ import moment from 'moment';
 import React from 'react';
-import type {Node} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+import ReminderService from './app/services/ReminderService';
 
-const App: () => Node = () => {
+const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
+  const Reminder = new ReminderService();
+
+  const addEventToCalendar = () => {
+    Reminder.addEvent({
+      title: 'Event subject',
+      note: 'some details about the event here',
+      startDate: moment().toISOString(),
+      endDate: moment().toISOString(),
+    })
+      .then(reminder => {
+        console.log('.....reminder', reminder);
+        // do something here
+      })
+      .catch(error => {
+        console.log('.....reminder error', error);
+        // handle errror here
+      });
   };
 
   return (
@@ -70,20 +59,9 @@ const App: () => Node = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          <TouchableOpacity onPress={() => addEventToCalendar()}>
+            <Text>Add Event to calendar</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
